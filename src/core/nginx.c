@@ -203,26 +203,20 @@ main(int argc, char *const *argv)
 
     ngx_debug_init();
 
-    if (ngx_strerror_init() != NGX_OK) {
+    if (ngx_strerror_init() != NGX_OK) { //strerror接口初始化ngx_sys_errlist列表。
         return 1;
     }
-
     if (ngx_get_options(argc, argv) != NGX_OK) {
         return 1;
     }
-
     if (ngx_show_version) {
         ngx_show_version_info();
-
         if (!ngx_test_config) {
             return 0;
         }
     }
-
     /* TODO */ ngx_max_sockets = -1;
-
     ngx_time_init();
-
 #if (NGX_PCRE)
     ngx_regex_init();
 #endif
@@ -745,100 +739,78 @@ ngx_get_options(int argc, char *const *argv)
     ngx_int_t   i;
 
     for (i = 1; i < argc; i++) {
-
         p = (u_char *) argv[i];
-
         if (*p++ != '-') {
             ngx_log_stderr(0, "invalid option: \"%s\"", argv[i]);
             return NGX_ERROR;
         }
 
         while (*p) {
-
             switch (*p++) {
-
             case '?':
             case 'h':
                 ngx_show_version = 1;
                 ngx_show_help = 1;
                 break;
-
             case 'v':
                 ngx_show_version = 1;
                 break;
-
             case 'V':
                 ngx_show_version = 1;
                 ngx_show_configure = 1;
                 break;
-
             case 't':
                 ngx_test_config = 1;
                 break;
-
             case 'T':
                 ngx_test_config = 1;
                 ngx_dump_config = 1;
                 break;
-
             case 'q':
                 ngx_quiet_mode = 1;
                 break;
-
             case 'p':
                 if (*p) {
                     ngx_prefix = p;
                     goto next;
                 }
-
                 if (argv[++i]) {
                     ngx_prefix = (u_char *) argv[i];
                     goto next;
                 }
-
                 ngx_log_stderr(0, "option \"-p\" requires directory name");
                 return NGX_ERROR;
-
             case 'c':
                 if (*p) {
                     ngx_conf_file = p;
                     goto next;
                 }
-
                 if (argv[++i]) {
                     ngx_conf_file = (u_char *) argv[i];
                     goto next;
                 }
-
                 ngx_log_stderr(0, "option \"-c\" requires file name");
                 return NGX_ERROR;
-
             case 'g':
                 if (*p) {
                     ngx_conf_params = p;
                     goto next;
                 }
-
                 if (argv[++i]) {
                     ngx_conf_params = (u_char *) argv[i];
                     goto next;
                 }
-
                 ngx_log_stderr(0, "option \"-g\" requires parameter");
                 return NGX_ERROR;
-
             case 's':
                 if (*p) {
                     ngx_signal = (char *) p;
-
                 } else if (argv[++i]) {
                     ngx_signal = argv[i];
-
                 } else {
                     ngx_log_stderr(0, "option \"-s\" requires parameter");
                     return NGX_ERROR;
                 }
-
                 if (ngx_strcmp(ngx_signal, "stop") == 0
                     || ngx_strcmp(ngx_signal, "quit") == 0
                     || ngx_strcmp(ngx_signal, "reopen") == 0
@@ -847,21 +819,16 @@ ngx_get_options(int argc, char *const *argv)
                     ngx_process = NGX_PROCESS_SIGNALLER;
                     goto next;
                 }
-
                 ngx_log_stderr(0, "invalid option: \"-s %s\"", ngx_signal);
                 return NGX_ERROR;
-
             default:
                 ngx_log_stderr(0, "invalid option: \"%c\"", *(p - 1));
                 return NGX_ERROR;
             }
         }
-
     next:
-
         continue;
     }
-
     return NGX_OK;
 }
 

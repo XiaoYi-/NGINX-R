@@ -34,8 +34,7 @@ ngx_strerror(ngx_err_t err, u_char *errstr, size_t size)
 {
     ngx_str_t  *msg;
 
-    msg = ((ngx_uint_t) err < NGX_SYS_NERR) ? &ngx_sys_errlist[err]:
-                                              &ngx_unknown_error;
+    msg = ((ngx_uint_t) err < NGX_SYS_NERR) ? &ngx_sys_errlist[err]: &ngx_unknown_error;
     size = ngx_min(size, msg->len);
 
     return ngx_cpymem(errstr, msg->data, size);
