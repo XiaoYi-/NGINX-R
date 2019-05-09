@@ -196,7 +196,7 @@ ngx_spawn_process(ngx_cycle_t *cycle, ngx_spawn_proc_pt proc, void *data,
     case 0:
         ngx_parent = ngx_pid;
         ngx_pid = ngx_getpid();
-        proc(cycle, data);
+        proc(cycle, data);  //子进程开启loop
         break;
 
     default:
@@ -343,7 +343,7 @@ ngx_signal_handler(int signo, siginfo_t *siginfo, void *ucontext)
     case NGX_PROCESS_SINGLE:
         switch (signo) {
 
-        case ngx_signal_value(NGX_SHUTDOWN_SIGNAL):
+        case ngx_signal_value(NGX_SHUTDOWN_SIGNAL): //设置ngx_quit变量，loop里面检查这个变量后作出反应
             ngx_quit = 1;
             action = ", shutting down";
             break;
@@ -635,7 +635,7 @@ ngx_os_signal_process(ngx_cycle_t *cycle, char *name, ngx_pid_t pid)
 
     for (sig = signals; sig->signo != 0; sig++) {
         if (ngx_strcmp(name, sig->name) == 0) {
-            if (kill(pid, sig->signo) != -1) {
+            if (kill(pid, sig->signo) != -1) { //向进程传递信号
                 return 0;
             }
 

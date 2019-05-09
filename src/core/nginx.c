@@ -156,14 +156,14 @@ static ngx_command_t  ngx_core_commands[] = {
 };
 
 
-static ngx_core_module_t  ngx_core_module_ctx = {
+static ngx_core_module_t  ngx_core_module_ctx = { //核心模块上下文
     ngx_string("core"),
-    ngx_core_module_create_conf,
-    ngx_core_module_init_conf
+    ngx_core_module_create_conf, //核心模块创建配置文件
+    ngx_core_module_init_conf //核心模块初始化配置文件
 };
 
 
-ngx_module_t  ngx_core_module = {
+ngx_module_t  ngx_core_module = { //核心模块的模块结构
     NGX_MODULE_V1,
     &ngx_core_module_ctx,                  /* module context */
     ngx_core_commands,                     /* module directives */
@@ -190,7 +190,7 @@ static char        *ngx_signal;
 
 static char **ngx_os_environ;
 
-//
+
 int ngx_cdecl
 main(int argc, char *const *argv)
 {
@@ -206,7 +206,7 @@ main(int argc, char *const *argv)
     if (ngx_strerror_init() != NGX_OK) { //strerror接口初始化ngx_sys_errlist列表。
         return 1;
     }
-    if (ngx_get_options(argc, argv) != NGX_OK) {
+    if (ngx_get_options(argc, argv) != NGX_OK) { //解析参数
         return 1;
     }
     if (ngx_show_version) {
@@ -221,7 +221,7 @@ main(int argc, char *const *argv)
     ngx_regex_init();
 #endif
 
-    ngx_pid = ngx_getpid();
+    ngx_pid = ngx_getpid(); //拿当前进程ID，保存在文件中用于向进程发送信号等。
     ngx_parent = ngx_getppid();
 
     log = ngx_log_init(ngx_prefix);
@@ -239,7 +239,7 @@ main(int argc, char *const *argv)
      * ngx_process_options()
      */
 
-    ngx_memzero(&init_cycle, sizeof(ngx_cycle_t));
+    ngx_memzero(&init_cycle, sizeof(ngx_cycle_t)); //ngx_cycle_t申请内存
     init_cycle.log = log;
     ngx_cycle = &init_cycle;
 
@@ -248,11 +248,11 @@ main(int argc, char *const *argv)
         return 1;
     }
 
-    if (ngx_save_argv(&init_cycle, argc, argv) != NGX_OK) {
+    if (ngx_save_argv(&init_cycle, argc, argv) != NGX_OK) { //保存参数到全局变量中
         return 1;
     }
 
-    if (ngx_process_options(&init_cycle) != NGX_OK) {
+    if (ngx_process_options(&init_cycle) != NGX_OK) { //参数保存到cycle中
         return 1;
     }
 
@@ -264,7 +264,7 @@ main(int argc, char *const *argv)
      * ngx_crc32_table_init() requires ngx_cacheline_size set in ngx_os_init()
      */
 
-    if (ngx_crc32_table_init() != NGX_OK) {
+    if (ngx_crc32_table_init() != NGX_OK) { //初始化一致性hash表，主要作用是加快查询
         return 1;
     }
 
@@ -274,15 +274,15 @@ main(int argc, char *const *argv)
 
     ngx_slab_sizes_init();
 
-    if (ngx_add_inherited_sockets(&init_cycle) != NGX_OK) {
+    if (ngx_add_inherited_sockets(&init_cycle) != NGX_OK) { //热启动的时候需要平滑过渡
         return 1;
     }
 
-    if (ngx_preinit_modules() != NGX_OK) {
+    if (ngx_preinit_modules() != NGX_OK) { //主要是前置的初始化模块,编号处理
         return 1;
     }
 
-    cycle = ngx_init_cycle(&init_cycle);
+    cycle = ngx_init_cycle(&init_cycle); //完成全局变量cycle的初始化，初始话模块。调每个模块的初始话函数。
     if (cycle == NULL) {
         if (ngx_test_config) {
             ngx_log_stderr(0, "configuration file %s test failed",
@@ -318,13 +318,13 @@ main(int argc, char *const *argv)
         return 0;
     }
 
-    if (ngx_signal) {
-        return ngx_signal_process(cycle, ngx_signal);
+    if (ngx_signal) { //如果有信号则处理信号，控制原来已经存在的进程。退出、加载等操作。信号处理函数设置某个全局变量，loop检查变量状态作出反应。
+        return ngx_signal_process(cycle, ngx_signal); 
     }
 
     ngx_os_status(cycle->log);
 
-    ngx_cycle = cycle;
+    ngx_cycle = cycle; //赋值给全局变量
 
     ccf = (ngx_core_conf_t *) ngx_get_conf(cycle->conf_ctx, ngx_core_module);
 
@@ -373,7 +373,7 @@ main(int argc, char *const *argv)
         ngx_single_process_cycle(cycle);
 
     } else {
-        ngx_master_process_cycle(cycle);
+        ngx_master_process_cycle(cycle); //子进程创建、事件监听、各种模块运行等都会包含进去
     }
 
     return 0;

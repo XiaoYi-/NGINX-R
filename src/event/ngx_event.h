@@ -407,7 +407,7 @@ extern ngx_uint_t            ngx_use_epoll_rdhup;
 #define NGX_CLEAR_EVENT    0    /* dummy declaration */
 #endif
 
-
+//define全局的函数声明，具体到对应的模块实现的时候再从ngx_event_action结构中拿。ngx_event_action结构会在编译阶段根据配置确定。
 #define ngx_process_events   ngx_event_actions.process_events
 #define ngx_done_events      ngx_event_actions.done
 

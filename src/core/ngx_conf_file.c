@@ -240,7 +240,7 @@ ngx_conf_parse(ngx_conf_t *cf, ngx_str_t *filename)
 
 
     for ( ;; ) {
-        rc = ngx_conf_read_token(cf);
+        rc = ngx_conf_read_token(cf); //拿到没一行的key->val, 或者 events 、 http
 
         /*
          * ngx_conf_read_token() may return
@@ -460,7 +460,7 @@ ngx_conf_handler(ngx_conf_t *cf, ngx_int_t last)
                 }
             }
 
-            rv = cmd->set(cf, cmd, conf);
+            rv = cmd->set(cf, cmd, conf); //调对应的cmd->set接口处理
 
             if (rv == NGX_CONF_OK) {
                 return NGX_OK;

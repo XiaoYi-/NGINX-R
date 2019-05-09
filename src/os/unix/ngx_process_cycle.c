@@ -71,7 +71,7 @@ static ngx_open_file_t  ngx_exit_log_file;
 
 
 void
-ngx_master_process_cycle(ngx_cycle_t *cycle)
+ngx_master_process_cycle(ngx_cycle_t *cycle) 
 {
     char              *title;
     u_char            *p;
@@ -128,8 +128,8 @@ ngx_master_process_cycle(ngx_cycle_t *cycle)
 
     ccf = (ngx_core_conf_t *) ngx_get_conf(cycle->conf_ctx, ngx_core_module);
 
-    ngx_start_worker_processes(cycle, ccf->worker_processes,
-                               NGX_PROCESS_RESPAWN);
+    ngx_start_worker_processes(cycle, ccf->worker_processes, //ccf->worker_processes工作进程数量
+                               NGX_PROCESS_RESPAWN); //开始工作进程
     ngx_start_cache_manager_processes(cycle, 0);
 
     ngx_new_binary = 0;
@@ -137,7 +137,7 @@ ngx_master_process_cycle(ngx_cycle_t *cycle)
     sigio = 0;
     live = 1;
 
-    for ( ;; ) {
+    for ( ;; ) { //master进程loop，开启监听工作进程。
         if (delay) {
             if (ngx_sigalrm) {
                 sigio = 0;
@@ -179,7 +179,7 @@ ngx_master_process_cycle(ngx_cycle_t *cycle)
             ngx_master_process_exit(cycle);
         }
 
-        if (ngx_terminate) {
+        if (ngx_terminate) { 
             if (delay == 0) {
                 delay = 50;
             }
@@ -203,7 +203,7 @@ ngx_master_process_cycle(ngx_cycle_t *cycle)
 
         if (ngx_quit) {
             ngx_signal_worker_processes(cycle,
-                                        ngx_signal_value(NGX_SHUTDOWN_SIGNAL));
+                                        ngx_signal_value(NGX_SHUTDOWN_SIGNAL)); //master进程收到退出信号，通知工作线程退出。
 
             ls = cycle->listening.elts;
             for (n = 0; n < cycle->listening.nelts; n++) {
@@ -357,7 +357,7 @@ ngx_start_worker_processes(ngx_cycle_t *cycle, ngx_int_t n, ngx_int_t type)
     for (i = 0; i < n; i++) {
 
         ngx_spawn_process(cycle, ngx_worker_process_cycle,
-                          (void *) (intptr_t) i, "worker process", type);
+                          (void *) (intptr_t) i, "worker process", type); //工作进程loop
 
         ch.pid = ngx_processes[ngx_process_slot].pid;
         ch.slot = ngx_process_slot;
@@ -725,7 +725,7 @@ ngx_master_process_exit(ngx_cycle_t *cycle)
 
 
 static void
-ngx_worker_process_cycle(ngx_cycle_t *cycle, void *data)
+ngx_worker_process_cycle(ngx_cycle_t *cycle, void *data) //工作进程loop
 {
     ngx_int_t worker = (intptr_t) data;
 
@@ -747,7 +747,7 @@ ngx_worker_process_cycle(ngx_cycle_t *cycle, void *data)
 
         ngx_log_debug0(NGX_LOG_DEBUG_EVENT, cycle->log, 0, "worker cycle");
 
-        ngx_process_events_and_timers(cycle);
+        ngx_process_events_and_timers(cycle); //处理事件和定时事件
 
         if (ngx_terminate) {
             ngx_log_error(NGX_LOG_NOTICE, cycle->log, 0, "exiting");
@@ -928,7 +928,7 @@ ngx_worker_process_init(ngx_cycle_t *cycle, ngx_int_t worker)
 
     for (i = 0; cycle->modules[i]; i++) {
         if (cycle->modules[i]->init_process) {
-            if (cycle->modules[i]->init_process(cycle) == NGX_ERROR) {
+            if (cycle->modules[i]->init_process(cycle) == NGX_ERROR) { //模块的进程初始话函数
                 /* fatal */
                 exit(2);
             }

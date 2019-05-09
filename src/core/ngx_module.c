@@ -54,7 +54,7 @@ ngx_cycle_modules(ngx_cycle_t *cycle)
     }
 
     ngx_memcpy(cycle->modules, ngx_modules,
-               ngx_modules_n * sizeof(ngx_module_t *));
+               ngx_modules_n * sizeof(ngx_module_t *)); //拷贝全局变量ngx_modules到cycle->modules中
 
     cycle->modules_n = ngx_modules_n;
 

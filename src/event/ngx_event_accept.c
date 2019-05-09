@@ -207,7 +207,7 @@ ngx_event_accept(ngx_event_t *ev)
 
         *log = ls->log;
 
-        c->recv = ngx_recv;
+        c->recv = ngx_recv; //默认的读接口，系统读。
         c->send = ngx_send;
         c->recv_chain = ngx_recv_chain;
         c->send_chain = ngx_send_chain;
@@ -309,8 +309,8 @@ ngx_event_accept(ngx_event_t *ev)
 
         log->data = NULL;
         log->handler = NULL;
-
-        ls->handler(c);
+        //如果是HTTP服务，这个ls->handler是ngx_http_init_connection,设置rev->handler = ngx_http_wait_request_handler;
+        ls->handler(c); 
 
         if (ngx_event_flags & NGX_USE_KQUEUE_EVENT) {
             ev->available--;

@@ -218,8 +218,8 @@
 
 #define NGX_MODULE_V1_PADDING  0, 0, 0, 0, 0, 0, 0, 0
 
-
-struct ngx_module_s {
+//模块数据结构。包括一些初始话函数、名称、工作状态机等。
+struct ngx_module_s { 
     ngx_uint_t            ctx_index;
     ngx_uint_t            index;
 
@@ -231,13 +231,13 @@ struct ngx_module_s {
     ngx_uint_t            version;
     const char           *signature;
 
-    void                 *ctx;
-    ngx_command_t        *commands;
-    ngx_uint_t            type;
+    void                 *ctx; //模块的content
+    ngx_command_t        *commands; //处理模块的配置
+    ngx_uint_t            type; //模块类型
 
     ngx_int_t           (*init_master)(ngx_log_t *log);
 
-    ngx_int_t           (*init_module)(ngx_cycle_t *cycle);
+    ngx_int_t           (*init_module)(ngx_cycle_t *cycle); //初始化接口
 
     ngx_int_t           (*init_process)(ngx_cycle_t *cycle);
     ngx_int_t           (*init_thread)(ngx_cycle_t *cycle);
@@ -274,7 +274,7 @@ ngx_int_t ngx_add_module(ngx_conf_t *cf, ngx_str_t *file,
     ngx_module_t *module, char **order);
 
 
-extern ngx_module_t  *ngx_modules[];
+extern ngx_module_t  *ngx_modules[]; //具体的模块可通过编译前的configure命令进行配置，即设置哪些模块需要编译，哪些不被编译。当编译的时候，会生成ngx_modules.c的文件，里面就包含模块数组。
 extern ngx_uint_t     ngx_max_module;
 
 extern char          *ngx_module_names[];

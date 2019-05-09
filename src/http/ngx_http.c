@@ -184,11 +184,11 @@ ngx_http_block(ngx_conf_t *cf, ngx_command_t *cmd, void *conf)
      */
 
     for (m = 0; cf->cycle->modules[m]; m++) {
-        if (cf->cycle->modules[m]->type != NGX_HTTP_MODULE) {
+        if (cf->cycle->modules[m]->type != NGX_HTTP_MODULE) { //不是http模块的过滤掉
             continue;
         }
 
-        module = cf->cycle->modules[m]->ctx;
+        module = cf->cycle->modules[m]->ctx; //创建config
         mi = cf->cycle->modules[m]->ctx_index;
 
         if (module->create_main_conf) {
@@ -1705,14 +1705,14 @@ ngx_http_add_listening(ngx_conf_t *cf, ngx_http_conf_addr_t *addr)
     ngx_http_core_srv_conf_t  *cscf;
 
     ls = ngx_create_listening(cf, &addr->opt.sockaddr.sockaddr,
-                              addr->opt.socklen);
+                              addr->opt.socklen); //常见监听结构，设置连接回调。
     if (ls == NULL) {
         return NULL;
     }
 
     ls->addr_ntop = 1;
 
-    ls->handler = ngx_http_init_connection;
+    ls->handler = ngx_http_init_connection; //第一次连接调这个回调，用这个回调创建一个connection。
 
     cscf = addr->default_server;
     ls->pool_size = cscf->connection_pool_size;

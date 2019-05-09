@@ -23,7 +23,7 @@ ngx_event_process_posted(ngx_cycle_t *cycle, ngx_queue_t *posted)
     while (!ngx_queue_empty(posted)) {
 
         q = ngx_queue_head(posted);
-        ev = ngx_queue_data(q, ngx_event_t, queue);
+        ev = ngx_queue_data(q, ngx_event_t, queue); //取出事件，并调事件的handler回调处理。
 
         ngx_log_debug1(NGX_LOG_DEBUG_EVENT, cycle->log, 0,
                       "posted event %p", ev);

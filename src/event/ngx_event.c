@@ -606,7 +606,7 @@ ngx_event_process_init(ngx_cycle_t *cycle)
     }
 
     for (m = 0; cycle->modules[m]; m++) {
-        if (cycle->modules[m]->type != NGX_EVENT_MODULE) {
+        if (cycle->modules[m]->type != NGX_EVENT_MODULE) { 
             continue;
         }
 
@@ -915,14 +915,14 @@ ngx_events_block(ngx_conf_t *cf, ngx_command_t *cmd, void *conf)
 
     /* count the number of the event modules and set up their indices */
 
-    ngx_event_max_module = ngx_count_modules(cf->cycle, NGX_EVENT_MODULE);
+    ngx_event_max_module = ngx_count_modules(cf->cycle, NGX_EVENT_MODULE); //拿到event类型模块的数量，根据模块数量申请配置空间大小。
 
     ctx = ngx_pcalloc(cf->pool, sizeof(void *));
     if (ctx == NULL) {
         return NGX_CONF_ERROR;
     }
 
-    *ctx = ngx_pcalloc(cf->pool, ngx_event_max_module * sizeof(void *));
+    *ctx = ngx_pcalloc(cf->pool, ngx_event_max_module * sizeof(void *)); //申请空间
     if (*ctx == NULL) {
         return NGX_CONF_ERROR;
     }
@@ -930,13 +930,13 @@ ngx_events_block(ngx_conf_t *cf, ngx_command_t *cmd, void *conf)
     *(void **) conf = ctx;
 
     for (i = 0; cf->cycle->modules[i]; i++) {
-        if (cf->cycle->modules[i]->type != NGX_EVENT_MODULE) {
+        if (cf->cycle->modules[i]->type != NGX_EVENT_MODULE) { //遍历event类型的模块
             continue;
         }
 
-        m = cf->cycle->modules[i]->ctx;
+        m = cf->cycle->modules[i]->ctx; //拿到模块类型ctx
 
-        if (m->create_conf) {
+        if (m->create_conf) { //调模块的create_conf接口
             (*ctx)[cf->cycle->modules[i]->ctx_index] =
                                                      m->create_conf(cf->cycle);
             if ((*ctx)[cf->cycle->modules[i]->ctx_index] == NULL) {
@@ -967,7 +967,7 @@ ngx_events_block(ngx_conf_t *cf, ngx_command_t *cmd, void *conf)
 
         if (m->init_conf) {
             rv = m->init_conf(cf->cycle,
-                              (*ctx)[cf->cycle->modules[i]->ctx_index]);
+                              (*ctx)[cf->cycle->modules[i]->ctx_index]); //初始话config
             if (rv != NGX_CONF_OK) {
                 return rv;
             }

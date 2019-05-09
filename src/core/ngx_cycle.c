@@ -36,7 +36,7 @@ static ngx_connection_t  dumb;
 
 
 ngx_cycle_t *
-ngx_init_cycle(ngx_cycle_t *old_cycle)
+ngx_init_cycle(ngx_cycle_t *old_cycle) //模块初始化
 {
     void                *rv;
     char               **senv;
@@ -220,14 +220,14 @@ ngx_init_cycle(ngx_cycle_t *old_cycle)
 
 
     for (i = 0; cycle->modules[i]; i++) {
-        if (cycle->modules[i]->type != NGX_CORE_MODULE) {
+        if (cycle->modules[i]->type != NGX_CORE_MODULE) { //不是核心模块continue
             continue;
         }
 
         module = cycle->modules[i]->ctx;
 
         if (module->create_conf) {
-            rv = module->create_conf(cycle);
+            rv = module->create_conf(cycle); //模块回调函数，创建模块的配置信息
             if (rv == NULL) {
                 ngx_destroy_pool(pool);
                 return NULL;
@@ -622,7 +622,7 @@ ngx_init_cycle(ngx_cycle_t *old_cycle)
 
     pool->log = cycle->log;
 
-    if (ngx_init_modules(cycle) != NGX_OK) {
+    if (ngx_init_modules(cycle) != NGX_OK) { //模块初始话，调模块的初始化函数
         /* fatal */
         exit(1);
     }
@@ -1042,7 +1042,7 @@ ngx_signal_process(ngx_cycle_t *cycle, char *sig)
 
     while (n-- && (buf[n] == CR || buf[n] == LF)) { /* void */ }
 
-    pid = ngx_atoi(buf, ++n);
+    pid = ngx_atoi(buf, ++n); //拿到之前保存好的pid
 
     if (pid == (ngx_pid_t) NGX_ERROR) {
         ngx_log_error(NGX_LOG_ERR, cycle->log, 0,
@@ -1051,7 +1051,7 @@ ngx_signal_process(ngx_cycle_t *cycle, char *sig)
         return 1;
     }
 
-    return ngx_os_signal_process(cycle, sig, pid);
+    return ngx_os_signal_process(cycle, sig, pid); //向进程发信号
 
 }
 
